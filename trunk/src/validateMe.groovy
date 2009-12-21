@@ -95,11 +95,11 @@ class ValidateMe {
                 println "= $total total problems"
                 println "Of which, there are $unique unique problems"
                 
-                // show whether a valid xml document
+                // display validation judgement
                 if (errors == 0 && fatal == 0) {
-                    println "\n$filename is a *VALID* XML document."
+                    println "\n${file.name} is a *VALID* XML document."
                 } else {
-                    println "\n$filename is an *INVALID* XML document."
+                    println "\n${file.name} is an *INVALID* XML document."
                 }
             } catch(Exception exception) {
                 println exception
