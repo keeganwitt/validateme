@@ -77,7 +77,7 @@ class ValidateMe {
                 // show unique problems, if requested
                 if ("unique".equalsIgnoreCase(verbosity)) {
                     errorH.uniqueExceptions.eachWithIndex () { problem, index ->
-                        println "${index + 1}. (${problem.value} occurrences): $problem\n"
+                        println "${index + 1}. (${problem.value} occurrences): ${problem.key}\n"
                     }
                 }
                 
