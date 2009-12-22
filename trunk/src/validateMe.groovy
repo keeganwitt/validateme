@@ -77,7 +77,7 @@ class ValidateMe {
                 // show unique problems, if requested
                 if ("unique".equalsIgnoreCase(verbosity)) {
                     errorH.uniqueExceptions.eachWithIndex () { problem, index ->
-                        println "${index + 1}. $problem\n"
+                        println "${index + 1}. (${problem.value} occurrences): $problem\n"
                     }
                 }
                 
@@ -124,7 +124,7 @@ class MyErrorHandler implements ErrorHandler {
     long fatal = 0
     long total = 0
     long numToDisplay = Long.MAX_VALUE
-    def uniqueExceptions = [] as Set
+    def uniqueExceptions = [:]    // map of exception messages : number of occurances
     
     public MyErrorHandler(long numToDisplay) {
         this.warnings = 0
@@ -132,7 +132,7 @@ class MyErrorHandler implements ErrorHandler {
         this.fatal = 0
         this.total = 0
         this.numToDisplay = numToDisplay
-        this.uniqueExceptions = [] as Set
+        this.uniqueExceptions = [:]
     }
     
     public MyErrorHandler() {
@@ -141,14 +141,18 @@ class MyErrorHandler implements ErrorHandler {
         this.fatal = 0
         this.total = 0
         this.numToDisplay = Long.MAX_VALUE
-        this.uniqueExceptions = [] as Set
+        this.uniqueExceptions = [:]
     }
 
     public void warning(SAXParseException exception) {
         if (total < numToDisplay) {
             println "${total + 1}. exception\n"
         }
-        uniqueExceptions.add(exception.getMessage())
+        if (uniqueExceptions.getAt(exception.getMessage()) == null) {
+            uniqueExceptions.put(exception.getMessage(), 1)
+        } else {
+            uniqueExceptions.(exception.getMessage())++
+        }
         warnings++
         total++
     }
@@ -157,7 +161,11 @@ class MyErrorHandler implements ErrorHandler {
         if (total < numToDisplay) {
             println "${total + 1}. $exception\n"
         }
-        uniqueExceptions.add(exception.getMessage())
+        if (uniqueExceptions.getAt(exception.getMessage()) == null) {
+            uniqueExceptions.put(exception.getMessage(), 1)
+        } else {
+            uniqueExceptions.(exception.getMessage())++
+        }
         errors++
         total++
     }
@@ -166,7 +174,11 @@ class MyErrorHandler implements ErrorHandler {
         if (total < numToDisplay) {
             println "${total + 1}.$exception\n"
         }
-        uniqueExceptions.add(exception.getMessage())
+        if (uniqueExceptions.getAt(exception.getMessage()) == null) {
+            uniqueExceptions.put(exception.getMessage(), 1)
+        } else {
+            uniqueExceptions.(exception.getMessage())++
+        }
         fatal++
         total++
     }
