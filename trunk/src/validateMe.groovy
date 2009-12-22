@@ -146,7 +146,7 @@ class MyErrorHandler implements ErrorHandler {
 
     public void warning(SAXParseException exception) {
         if (total < numToDisplay) {
-            println "${total + 1}. exception\n"
+            println "${total + 1}. (L${exception.getLineNumber()}, C${exception.getColumnNumber()}): $exception\n"
         }
         if (uniqueExceptions.getAt(exception.getMessage()) == null) {
             uniqueExceptions.put(exception.getMessage(), 1)
@@ -159,7 +159,7 @@ class MyErrorHandler implements ErrorHandler {
 
     public void error(SAXParseException exception) {
         if (total < numToDisplay) {
-            println "${total + 1}. $exception\n"
+            println "${total + 1}. (L${exception.getLineNumber()}, C${exception.getColumnNumber()}): $exception\n"
         }
         if (uniqueExceptions.getAt(exception.getMessage()) == null) {
             uniqueExceptions.put(exception.getMessage(), 1)
@@ -172,7 +172,7 @@ class MyErrorHandler implements ErrorHandler {
 
     public void fatalError(SAXParseException exception) {
         if (total < numToDisplay) {
-            println "${total + 1}.$exception\n"
+            println "${total + 1}. (L${exception.getLineNumber()}, C${exception.getColumnNumber()}): $exception\n"
         }
         if (uniqueExceptions.getAt(exception.getMessage()) == null) {
             uniqueExceptions.put(exception.getMessage(), 1)
