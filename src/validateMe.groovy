@@ -32,27 +32,28 @@ import org.xml.sax.SAXParseException
  */
 class ValidateMe {
     public static main(def args) {
-        if (args.length > 0 && args.length < 3 && !"help".equalsIgnoreCase(args[0])) {
+        if (args.length > 0 && args.length < 4 && !"help".equalsIgnoreCase(args[0])) {
             try {
                 String filename = args[0]
-                String verbosity
+                String verbosity                
+                Sort sortUniquesBy = Sort.NONE
                 
                 // set up the parser
                 File file = new File(filename)
                 boolean validating = true
                 boolean namespaceAware = true
-                def xmlReader = new XmlParser(validating, namespaceAware)
+                def xmlReader = new XmlSlurper(validating, namespaceAware)
                 MyErrorHandler errorH = null
                 
                 // set up the error handler
+                verbosity = args[1]
                 if (args.length == 2) {
-                    verbosity = args[1]
-                    if ("summary".equalsIgnoreCase(verbosity)) {
+                    if (Verbosity.SUMMARY.toString().equalsIgnoreCase(verbosity)) {
                         errorH = new MyErrorHandler(0)
-                    } else if ("verbose".equalsIgnoreCase(verbosity)) {
+                    } else if (Verbosity.VERBOSE.toString().equalsIgnoreCase(verbosity)) {
                         errorH = new MyErrorHandler(Long.MAX_VALUE)
                         println "All Problems:\n"
-                    } else if ("unique".equalsIgnoreCase(verbosity)) {
+                    } else if (Verbosity.UNIQUE.toString().equalsIgnoreCase(verbosity)) {
                         errorH = new MyErrorHandler(0)
                         println "Unique Problems:\n"
                     } else {
@@ -65,6 +66,15 @@ class ValidateMe {
                             println "The First 10 Problems:\n"
                         }
                     }
+                } else if (args.length == 3) {
+                    // can only be 3 in the case of unique
+                    if (!Verbosity.UNIQUE.toString().equalsIgnoreCase(verbosity)) {
+                        showHelp()
+                    } else {
+                        sortUniquesBy = Sort.valueOf(args[2].toUpperCase())
+                        errorH = new MyErrorHandler(0)
+                        println "Unique Problems:\n"
+                    }
                 } else {    // no verbosity specified
                     errorH = new MyErrorHandler(10)
                     println "The First 10 Problems:\n"
@@ -75,8 +85,17 @@ class ValidateMe {
                 xmlReader.parse(filename)
                 
                 // show unique problems, if requested
-                if ("unique".equalsIgnoreCase(verbosity)) {
-                    errorH.uniqueExceptions.eachWithIndex () { problem, index ->
+                if (Verbosity.UNIQUE.toString().equalsIgnoreCase(verbosity)) {                    
+                    def uniques
+                    if (sortUniquesBy == Sort.ASC) {
+                        uniques = errorH.uniqueExceptions.sort {it.value}
+                    } else if (sortUniquesBy == Sort.DESC) {
+                        uniques = errorH.uniqueExceptions.sort {-it.value}
+                    } else {
+                        uniques = errorH.uniqueExceptions
+                    }
+                    
+                    uniques.eachWithIndex () { problem, index ->
                         println "${index + 1}. (${problem.value} occurrences): ${problem.key}\n"
                     }
                 }
@@ -105,12 +124,16 @@ class ValidateMe {
                 println exception
             }
         } else {    // arguments didn't match or asked for help, show usage
-            println "Usage: validateMe <filename> {summary|verbose|unique|<number of problems to display>}"
-            println "SUMMARY shows no problems, VERBOSE shows all problems, UNIQUE shows each problem only once (though not in any order).  Entering your own number shows the first <number of problems to display> problems."
-            println "If you do not specify a verbosity, it will default to outputting only the first 10 problems."
+            showHelp()
         }
         
         return
+    }
+    
+    public void showHelp() {
+        println "Usage: validateMe <filename> (summary|verbose|unique (asc|desc|none)|<number of problems to display>)"
+        println "SUMMARY shows no problems, VERBOSE shows all problems, UNIQUE shows each problem only once (order argument optional).  Entering your own number shows the first <number of problems to display> problems."
+        println "If you do not specify a verbosity, it will default to outputting only the first 10 problems."
     }
 }
 
@@ -183,3 +206,7 @@ class MyErrorHandler implements ErrorHandler {
         total++
     }
 }
+
+// enums down here instead of inside ValidateMe because of http://jira.codehaus.org/browse/GROOVY-3979
+public enum Sort { NONE, ASC, DESC }
+public enum Verbosity { SUMMARY, VERBOSE, UNIQUE }
