@@ -133,7 +133,7 @@ class ValidateMe {
     public void showHelp() {
         println "Usage: validateMe <filename> (summary|verbose|unique (asc|desc|none)|<number of problems to display>)"
         println "SUMMARY shows no problems, VERBOSE shows all problems, UNIQUE shows each problem only once (order argument optional).  Entering your own number shows the first <number of problems to display> problems."
-        println "If you do not specify a verbosity, it will default to outputting only the first 10 problems."
+        println "If you do not specify a verbosity, it will default to outputting only the first 10 problems. If you don't specify an order for unique listing, none will be used."
     }
 }
 
