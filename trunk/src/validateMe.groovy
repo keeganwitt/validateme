@@ -46,8 +46,8 @@ class ValidateMe {
                 MyErrorHandler errorH = null
                 
                 // set up the error handler
-                verbosity = args[1]
                 if (args.length == 2) {
+                    verbosity = args[1]
                     if (Verbosity.SUMMARY.toString().equalsIgnoreCase(verbosity)) {
                         errorH = new MyErrorHandler(0)
                     } else if (Verbosity.VERBOSE.toString().equalsIgnoreCase(verbosity)) {
@@ -130,10 +130,14 @@ class ValidateMe {
         return
     }
     
-    public void showHelp() {
-        println "Usage: validateMe <filename> (summary|verbose|unique (asc|desc|none)|<number of problems to display>)"
-        println "SUMMARY shows no problems, VERBOSE shows all problems, UNIQUE shows each problem only once (order argument optional).  Entering your own number shows the first <number of problems to display> problems."
-        println "If you do not specify a verbosity, it will default to outputting only the first 10 problems. If you don't specify an order for unique listing, none will be used."
+    public static void showHelp() {
+        println "Usage: validateMe <filename> (summary|verbose|unique (asc|desc|none))|<number>"
+        println "SUMMARY  -  shows no problems"
+        println "VERBOSE  -  shows all problems"
+        println "UNIQUE   -  shows each problem only once"
+        println "            [asc|desc|none] (optional, defaults to parse order)"
+        println "<number> -  Entering your own number shows the first <number> problems."
+        println "If you do not specify a verbosity, defaults to showing the first 10 problems."
     }
 }
 
