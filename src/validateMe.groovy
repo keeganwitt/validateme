@@ -36,7 +36,7 @@ class ValidateMe {
             try {
                 String filename = args[0]
                 String verbosity                
-                Sort sortUniquesBy = Sort.NONE
+                Sort sortUniquesBy = Sort.PARSE
                 
                 // set up the parser
                 File file = new File(filename)
@@ -132,11 +132,11 @@ class ValidateMe {
     
     public static void showHelp() {
         println "Usage: validateMe <filename> (summary|verbose|unique (asc|desc|none))|<number>"
-        println "SUMMARY  -  shows no problems"
-        println "VERBOSE  -  shows all problems"
-        println "UNIQUE   -  shows each problem only once"
-        println "            [asc|desc|none] (optional, defaults to parse order)"
-        println "<number> -  Entering your own number shows the first <number> problems."
+        println "\tSUMMARY  -  shows no problems"
+        println "\tVERBOSE  -  shows all problems"
+        println "\tUNIQUE   -  shows each problem only once"
+        println "\t            [ASC|DESC|PARSE] (optional, defaults to parse order)"
+        println "\t<number> -  Entering your own number shows the first <number> problems."
         println "If you do not specify a verbosity, defaults to showing the first 10 problems."
     }
 }
@@ -212,5 +212,5 @@ class MyErrorHandler implements ErrorHandler {
 }
 
 // enums down here instead of inside ValidateMe because of http://jira.codehaus.org/browse/GROOVY-3979
-public enum Sort { NONE, ASC, DESC }
+public enum Sort { PARSE, ASC, DESC }
 public enum Verbosity { SUMMARY, VERBOSE, UNIQUE }
