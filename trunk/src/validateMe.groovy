@@ -34,23 +34,18 @@ class ValidateMe {
     public static main(def args) {
         if (args.length > 0 && args.length < 4 && !"help".equalsIgnoreCase(args[0])) {
             try {
-                String filename = args[0]
-                String verbosity                
-                Sort sortUniquesBy = Sort.PARSE
-                
-                // set up the parser
-                File file = new File(filename)
-                boolean validating = true
-                boolean namespaceAware = true
-                def xmlReader = new XmlSlurper(validating, namespaceAware)
+                def filename = ""
+                def verbosity = ""
+                def sortUniquesBy = Sort.PARSE
                 MyErrorHandler errorH = null
-                
-                // set up the error handler
+
+                // set up the error handler, filename, and verbosity
                 if (args.length == 2) {
-                    verbosity = args[1]
+                    verbosity = args[0]
+                    filename = args[1]
                     if (Verbosity.SUMMARY.toString().equalsIgnoreCase(verbosity)) {
                         errorH = new MyErrorHandler(0)
-                    } else if (Verbosity.VERBOSE.toString().equalsIgnoreCase(verbosity)) {
+                    } else if (Verbosity.ALL.toString().equalsIgnoreCase(verbosity)) {
                         errorH = new MyErrorHandler(Long.MAX_VALUE)
                         println "All Problems:\n"
                     } else if (Verbosity.UNIQUE.toString().equalsIgnoreCase(verbosity)) {
@@ -67,23 +62,33 @@ class ValidateMe {
                         }
                     }
                 } else if (args.length == 3) {
+                    verbosity = args[0]
+                    def order = args[1]
+                    filename = args[2]
                     // can only be 3 in the case of unique
                     if (!Verbosity.UNIQUE.toString().equalsIgnoreCase(verbosity)) {
                         showHelp()
-                    } else {
-                        sortUniquesBy = Sort.valueOf(args[2].toUpperCase())
+                    } else {                        
+                        sortUniquesBy = Sort.valueOf(order.toUpperCase())
                         errorH = new MyErrorHandler(0)
                         println "Unique Problems:\n"
                     }
-                } else {    // no verbosity specified
+                } else {    // no verbosity specified (args.length == 1)
+                    filename = args[0]
                     errorH = new MyErrorHandler(10)
                     println "The First 10 Problems:\n"
                 }
                 
+                // set up the parser
+                def file = new File(filename)
+                def validating = true
+                def namespaceAware = true
+                def xmlReader = new XmlSlurper(validating, namespaceAware)                
+
                 // perform the parsing
                 xmlReader.setErrorHandler(errorH)
                 xmlReader.parse(filename)
-                
+
                 // show unique problems, if requested
                 if (Verbosity.UNIQUE.toString().equalsIgnoreCase(verbosity)) {                    
                     def uniques
@@ -99,7 +104,7 @@ class ValidateMe {
                         println "${index + 1}. (${problem.value} occurrences): ${problem.key}\n"
                     }
                 }
-                
+
                 // display summary statistics
                 int total = errorH.total
                 int warnings = errorH.warnings
@@ -113,7 +118,7 @@ class ValidateMe {
                 println "----------------------"
                 println "= $total total problems"
                 println "Of which, there are $unique unique problems"
-                
+
                 // display validation judgement
                 if (errors == 0 && fatal == 0) {
                     println "\n${file.name} is a *VALID* XML document."
@@ -126,14 +131,14 @@ class ValidateMe {
         } else {    // arguments didn't match or asked for help, show usage
             showHelp()
         }
-        
+
         return
     }
-    
+
     public static void showHelp() {
-        println "Usage: validateMe <filename> (summary|verbose|unique (asc|desc|none))|<number>"
+        println "Usage: validateMe (summary|all|unique (asc|desc|none))|<number> <filename>"
         println "\tSUMMARY  -  shows no problems"
-        println "\tVERBOSE  -  shows all problems"
+        println "\tALL      -  shows all problems"
         println "\tUNIQUE   -  shows each problem only once"
         println "\t            [ASC|DESC|PARSE] (optional, defaults to parse order)"
         println "\t<number> -  Entering your own number shows the first <number> problems."
@@ -152,7 +157,7 @@ class MyErrorHandler implements ErrorHandler {
     long total = 0
     long numToDisplay = Long.MAX_VALUE
     def uniqueExceptions = [:]    // map of exception messages : number of occurances
-    
+
     public MyErrorHandler(long numToDisplay) {
         this.warnings = 0
         this.errors = 0
@@ -161,7 +166,7 @@ class MyErrorHandler implements ErrorHandler {
         this.numToDisplay = numToDisplay
         this.uniqueExceptions = [:]
     }
-    
+
     public MyErrorHandler() {
         this.warnings = 0
         this.errors = 0
@@ -213,4 +218,4 @@ class MyErrorHandler implements ErrorHandler {
 
 // enums down here instead of inside ValidateMe because of http://jira.codehaus.org/browse/GROOVY-3979
 public enum Sort { PARSE, ASC, DESC }
-public enum Verbosity { SUMMARY, VERBOSE, UNIQUE }
+public enum Verbosity { SUMMARY, ALL, UNIQUE }
