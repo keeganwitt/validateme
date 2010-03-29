@@ -1,8 +1,7 @@
 /*
  * This is a simple Groovy script to validate xml documents and show validation problems
- * Note: This script requires groovy installed to run
- * 
- * 
+ *
+ *
  * Copyright (c)2009 Keegan Witt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -68,7 +67,7 @@ class ValidateMe {
                     // can only be 3 in the case of unique
                     if (!Verbosity.UNIQUE.toString().equalsIgnoreCase(verbosity)) {
                         showHelp()
-                    } else {                        
+                    } else {
                         sortUniquesBy = Sort.valueOf(order.toUpperCase())
                         errorH = new MyErrorHandler(0)
                         println "Unique Problems:\n"
@@ -78,28 +77,30 @@ class ValidateMe {
                     errorH = new MyErrorHandler(10)
                     println "The First 10 Problems:\n"
                 }
-                
+
                 // set up the parser
                 def file = new File(filename)
                 def validating = true
                 def namespaceAware = true
-                def xmlReader = new XmlSlurper(validating, namespaceAware)                
+                def xmlReader = new XmlSlurper(validating, namespaceAware)
 
                 // perform the parsing
                 xmlReader.setErrorHandler(errorH)
                 xmlReader.parse(filename)
 
                 // show unique problems, if requested
-                if (Verbosity.UNIQUE.toString().equalsIgnoreCase(verbosity)) {                    
+                if (Verbosity.UNIQUE.toString().equalsIgnoreCase(verbosity)) {
                     def uniques
                     if (sortUniquesBy == Sort.ASC) {
+                        // sorts smallest first
                         uniques = errorH.uniqueExceptions.sort {it.value}
                     } else if (sortUniquesBy == Sort.DESC) {
+                        // sorts largest first
                         uniques = errorH.uniqueExceptions.sort {-it.value}
                     } else {
                         uniques = errorH.uniqueExceptions
                     }
-                    
+
                     uniques.eachWithIndex () { problem, index ->
                         println "${index + 1}. (${problem.value} occurrences): ${problem.key}\n"
                     }
@@ -111,13 +112,16 @@ class ValidateMe {
                 int errors = errorH.errors
                 int fatal = errorH.fatal
                 int unique = errorH.uniqueExceptions.size()
-                println "\nSUMMARY"
-                println "  $warnings  warnings"
-                println "+ $errors  errors"
-                println "+ $fatal  fatal errors"
-                println "----------------------"
-                println "= $total total problems"
-                println "Of which, there are $unique unique problems"
+                println ""
+                println "SUMMARY".center(26)
+                println "--------------------------"
+                printf("|%-15s|%8d|\n", "warnings", warnings)
+                printf("|%-15s|%8d|\n", "errors", errors)
+                printf("|%-15s|%8d|\n", "fatal errors", fatal)
+                println "--------------------------"
+                printf("|%-15s|%8d|\n", "total problems", total)
+                printf("|%-15s|%8d|\n", "unique problems", unique)
+                println "--------------------------"
 
                 // display validation judgement
                 if (errors == 0 && fatal == 0) {
@@ -137,10 +141,11 @@ class ValidateMe {
 
     public static void showHelp() {
         println "Usage: validateMe (summary|all|unique (asc|desc|none))|<number> <filename>"
-        println "\tSUMMARY  -  shows no problems"
-        println "\tALL      -  shows all problems"
+        println "\tSUMMARY  -  shows no problems."
+        println "\tALL      -  shows all problems."
         println "\tUNIQUE   -  shows each problem only once"
         println "\t            [ASC|DESC|PARSE] (optional, defaults to parse order)"
+        println "\t              to sort by the number of occurences."
         println "\t<number> -  Entering your own number shows the first <number> problems."
         println "If you do not specify a verbosity, defaults to showing the first 10 problems."
     }
