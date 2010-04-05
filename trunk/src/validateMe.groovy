@@ -140,14 +140,14 @@ class ValidateMe {
     }
 
     public static void showHelp() {
-        println "Usage: validateMe (summary|all|unique (asc|desc|none))|<number> <filename>"
-        println "\tSUMMARY  -  shows no problems."
-        println "\tALL      -  shows all problems."
-        println "\tUNIQUE   -  shows each problem only once"
-        println "\t            [ASC|DESC|PARSE] (optional, defaults to parse order)"
-        println "\t              to sort by the number of occurences."
-        println "\t<number> -  Entering your own number shows the first <number> problems."
-        println "If you do not specify a verbosity, defaults to showing the first 10 problems."
+        System.err.println "Usage: validateMe (summary|all|unique (asc|desc|none))|<number> <filename>"
+        System.err.println "\tSUMMARY  -  shows no problems."
+        System.err.println "\tALL      -  shows all problems."
+        System.err.println "\tUNIQUE   -  shows each problem only once"
+        System.err.println "\t            [ASC|DESC|PARSE] (optional, defaults to parse order)"
+        System.err.println "\t              to sort by the number of occurences."
+        System.err.println "\t<number> -  Entering your own number shows the first <number> problems."
+        System.err.println "If you do not specify a verbosity, defaults to showing the first 10 problems."
     }
 }
 
