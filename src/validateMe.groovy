@@ -83,9 +83,9 @@ class ValidateMe {
                 def validating = true
                 def namespaceAware = true
                 def xmlReader = new XmlSlurper(validating, namespaceAware)
+                xmlReader.setErrorHandler(errorH)
 
                 // perform the parsing
-                xmlReader.setErrorHandler(errorH)
                 xmlReader.parse(filename)
 
                 // show unique problems, if requested
